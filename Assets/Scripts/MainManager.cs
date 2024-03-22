@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,6 +11,8 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text CurrentPLayer;
+
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -22,6 +24,8 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        CurrentPLayer.text = DataManager.instance.playerName;
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -55,8 +59,11 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                SaveTheScore();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
@@ -73,4 +80,18 @@ public class MainManager : MonoBehaviour
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+
+    public void LeaveGame()
+    {
+        SaveTheScore();
+        SceneManager.LoadScene(0);
+    }
+
+   private void SaveTheScore()
+    {
+        DataManager.instance.score = m_Points;
+        DataManager.instance.AddOrUpdateScore(DataManager.instance.playerName, DataManager.instance.score);
+        DataManager.instance.SaveScoresToJson();
+    }
+
 }
